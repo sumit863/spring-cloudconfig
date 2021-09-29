@@ -2,7 +2,8 @@ pipeline {
 	agent any
 	environment {
 		mavenhome = tool 'myMaven'
-		PATH = "$mavenhome/bin:$PATH"
+		dockerhome = tool 'myDocker'
+		PATH = "$dockerhome/bin:$mavenhome/bin:$PATH"
 	}
 
 	stages {
@@ -22,6 +23,40 @@ pipeline {
 		stage('Test') {
 			steps {
 				echo "Test"
+				sh "mvn test"
+			}
+		}
+
+		stage('Integration Test') {
+			steps {
+				sh "mvn failsafe:integration-test failsafe:verify"
+			}
+		}
+
+		stage('Package') {
+			steps {
+				sh "mvn package -DskipTests"
+			}
+		}
+
+		stage('Build Docker Image') {
+			steps {
+				//"docker build -t in28min/currency-exchange-devops:$env.BUILD_TAG"
+				script {
+					dockerImage = docker.build("sumitrajput/currency-exchange-devops:${env.BUILD_TAG}")
+				}
+
+			}
+		}
+
+		stage('Push Docker Image') {
+			steps {
+				script {
+					docker.withRegistry('', 'dockerhub') {
+						dockerImage.push();
+						dockerImage.push('latest');
+					}
+				}
 			}
 		}
 	}
