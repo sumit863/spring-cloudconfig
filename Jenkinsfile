@@ -7,8 +7,10 @@ pipeline {
 
 	stages {
 		stage('Checkout') {
-			echo "Build"
-			echo "Name - $env.JOB_NAME"
+			steps{
+				echo "Build"
+				echo "Name - $env.JOB_NAME"
+			}	
 		}
 
 		stage('Compile') {
@@ -18,7 +20,9 @@ pipeline {
 		}
 
 		stage('Test') {
-			echo "Test"
+			steps {
+				echo "Test"
+			}
 		}
 	}
 	post {
