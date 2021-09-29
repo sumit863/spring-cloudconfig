@@ -42,8 +42,11 @@ pipeline {
 		stage('Build Docker Image') {
 			steps {
 				//"docker build -t in28min/currency-exchange-devops:$env.BUILD_TAG"
+				sh 'docker version'
 				script {
+					echo 'Inside script'
 					dockerImage = docker.build("sumitrajput/currency-exchange-devops:${env.BUILD_TAG}")
+					echo 'Image built'
 				}
 
 			}
