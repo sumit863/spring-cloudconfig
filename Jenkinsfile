@@ -3,8 +3,7 @@ pipeline {
 	environment {
 		mavenhome = tool 'myMaven'
 		dockerhome = tool 'myDocker'
-		sonarhome = tool 'sonar'
-		PATH = "$sonarhome/bin:$dockerhome/bin:$mavenhome/bin:$PATH"
+		PATH = "$dockerhome/bin:$mavenhome/bin:$PATH"
 	}
 
 	stages {
@@ -55,6 +54,7 @@ pipeline {
 
 		stage('Sonar Scanner') {
 			steps {
+				def sonarqubeScannerHome = tool name: 'sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
 				withCredentials([string(credentialsId: 'sonar', variable: 'sonarlogin')]) {
 					sh "sonar-scanner -e -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${sonarLogin} -Dsonar.projectName=sum-jenkins-ms -Dsonar.projectVersion=${env.BUILD_NUMBER} -Dsonar.projectKey=SJM -Dsonar.sources=src/main/ -Dsonar.tests=src/test/ -Dsonar.language=java -Dsonar.java.binaries=."
 				}
