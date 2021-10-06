@@ -36,10 +36,7 @@ pipeline {
 		stage('Package && SonarQube Analysis') {
 			steps {
 				withSonarQubeEnv('My SonarQube Server') {
-                    // Optionally use a Maven environment you've configured already
-                    withMaven(maven:'myMaven') {
                         sh 'mvn clean package sonar:sonar'
-                    }
                 }
 				//sh "mvn package -DskipTests"
 			}
