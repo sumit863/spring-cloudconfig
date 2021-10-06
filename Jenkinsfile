@@ -56,7 +56,7 @@ pipeline {
 		stage('Sonar Scanner') {
 			steps {
 				withCredentials([string(credentialsId: 'sonar', variable: 'sonarlogin')]) {
-					sh "/sonar-scanner -e -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${sonarLogin} -Dsonar.projectName=sum-jenkins-ms -Dsonar.projectVersion=${env.BUILD_NUMBER} -Dsonar.projectKey=GS -Dsonar.sources=complete/src/main/ -Dsonar.tests=complete/src/test/ -Dsonar.language=java -Dsonar.java.binaries=."
+					sh "sonar-scanner -e -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${sonarLogin} -Dsonar.projectName=sum-jenkins-ms -Dsonar.projectVersion=${env.BUILD_NUMBER} -Dsonar.projectKey=SJM -Dsonar.sources=src/main/ -Dsonar.tests=src/test/ -Dsonar.language=java -Dsonar.java.binaries=."
 				}
 			}
 		}
