@@ -33,10 +33,17 @@ pipeline {
 		// 	}
 		// }
 
-		stage('Package') {
+		stage('Package && SonarQube Analysis') {
 			steps {
-				sh "mvn package -DskipTests"
+				withSonarQubeEnv('My SonarQube Server') {
+                    // Optionally use a Maven environment you've configured already
+                    withMaven(maven:'myMaven') {
+                        sh 'mvn clean package sonar:sonar'
+                    }
+                }
+				//sh "mvn package -DskipTests"
 			}
+			
 		}
 
 		stage('Build Docker Image') {
@@ -52,14 +59,14 @@ pipeline {
 			}
 		}
 
-		stage('Sonar Scanner') {
-			steps {
-				def sonarqubeScannerHome = tool name: 'sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-				withCredentials([string(credentialsId: 'sonar', variable: 'sonarlogin')]) {
-					sh "sonar-scanner -e -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${sonarLogin} -Dsonar.projectName=sum-jenkins-ms -Dsonar.projectVersion=${env.BUILD_NUMBER} -Dsonar.projectKey=SJM -Dsonar.sources=src/main/ -Dsonar.tests=src/test/ -Dsonar.language=java -Dsonar.java.binaries=."
-				}
-			}
-		}
+		// stage('Sonar Scanner') {
+		// 	steps {
+		// 		def sonarqubeScannerHome = tool name: 'sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+		// 		withCredentials([string(credentialsId: 'sonar', variable: 'sonarlogin')]) {
+		// 			sh "${sonarqubeScannerHome}/bin/sonar-scanner -e -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${sonarLogin} -Dsonar.projectName=sum-jenkins-ms -Dsonar.projectVersion=${env.BUILD_NUMBER} -Dsonar.projectKey=SJM -Dsonar.sources=src/main/ -Dsonar.tests=src/test/ -Dsonar.language=java -Dsonar.java.binaries=."
+		// 		}
+		// 	}
+		// }
 
 		stage('Push Docker Image') {
 			steps {
